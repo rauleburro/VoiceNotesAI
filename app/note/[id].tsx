@@ -1,29 +1,29 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import { AIAssistSection } from '@/components/AIAssistSection';
+import { AudioPlayer } from '@/components/AudioPlayer';
+import { AudioRouteToggle } from '@/components/AudioRouteToggle';
+import { RetryButton } from '@/components/RetryButton';
+import { StatusChip } from '@/components/StatusChip';
+import { useNotesContext } from '@/contexts/NotesContext';
+import { useAIAssist } from '@/hooks/useAIAssist';
+import { useAudioPlayer } from '@/hooks/useAudioPlayer';
+import { useColors } from '@/hooks/useThemeColor';
+import { useTranscription } from '@/hooks/useTranscription';
+import { deleteNote, getNoteById, updateNoteTranscript } from '@/services/database';
+import { deleteRecordingFile } from '@/services/recording';
+import { VoiceNote } from '@/types';
+import { FontAwesome } from '@expo/vector-icons';
+import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
-  View,
-  Text,
-  ScrollView,
-  TextInput,
-  StyleSheet,
+  ActivityIndicator,
   Alert,
   Pressable,
-  ActivityIndicator,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
 } from 'react-native';
-import { useLocalSearchParams, useRouter, Stack } from 'expo-router';
-import { FontAwesome } from '@expo/vector-icons';
-import { useNotesContext } from '@/contexts/NotesContext';
-import { getNoteById, updateNoteTranscript, deleteNote } from '@/services/database';
-import { deleteRecordingFile } from '@/services/recording';
-import { useTranscription } from '@/hooks/useTranscription';
-import { useAudioPlayer } from '@/hooks/useAudioPlayer';
-import { useAIAssist } from '@/hooks/useAIAssist';
-import { useColors } from '@/hooks/useThemeColor';
-import { AudioPlayer } from '@/components/AudioPlayer';
-import { StatusChip } from '@/components/StatusChip';
-import { RetryButton } from '@/components/RetryButton';
-import { AIAssistSection } from '@/components/AIAssistSection';
-import { AudioRouteToggle } from '@/components/AudioRouteToggle';
-import { VoiceNote } from '@/types';
 
 export default function NoteDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -127,8 +127,20 @@ export default function NoteDetailScreen() {
         options={{
           title: note.titleSuggestion || 'Note',
           headerRight: () => (
-            <Pressable onPress={handleDelete} hitSlop={8} accessibilityLabel="Delete note">
-              <FontAwesome name="trash" size={20} color={colors.error} />
+            <Pressable
+              onPress={handleDelete}
+              hitSlop={8}
+              accessibilityLabel="Delete note"
+              style={({ pressed }) => ({
+                opacity: pressed ? 0.6 : 1,
+                width: 36,
+                height: 36,
+                borderRadius: 8,
+                justifyContent: 'center',
+                alignItems: 'center',
+              })}
+            >
+              <FontAwesome name="trash-o" size={18} color={colors.error} />
             </Pressable>
           ),
         }}
