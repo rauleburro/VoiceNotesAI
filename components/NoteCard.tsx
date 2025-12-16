@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { VoiceNote } from '@/types';
+import { useColors } from '@/hooks/useThemeColor';
 import { StatusChip } from './StatusChip';
 
 interface NoteCardProps {
@@ -33,29 +34,34 @@ function getExcerpt(text: string | null, maxLength: number = 80): string {
 }
 
 export function NoteCard({ note, onPress }: NoteCardProps) {
+  const colors = useColors();
   const title = note.titleSuggestion || formatDate(note.createdAt);
 
   return (
     <Pressable
-      style={({ pressed }) => [styles.card, pressed && styles.pressed]}
+      style={({ pressed }) => [
+        styles.card,
+        { backgroundColor: colors.cardBackground },
+        pressed && styles.pressed,
+      ]}
       onPress={onPress}
     >
       <View style={styles.header}>
-        <Text style={styles.title} numberOfLines={1}>
+        <Text style={[styles.title, { color: colors.textPrimary }]} numberOfLines={1}>
           {title}
         </Text>
         <StatusChip status={note.transcriptStatus} />
       </View>
 
-      <Text style={styles.excerpt} numberOfLines={2}>
+      <Text style={[styles.excerpt, { color: colors.textSecondary }]} numberOfLines={2}>
         {getExcerpt(note.transcript)}
       </Text>
 
       <View style={styles.footer}>
-        <Text style={styles.meta}>
+        <Text style={[styles.meta, { color: colors.textTertiary }]}>
           {formatDate(note.createdAt)}
         </Text>
-        <Text style={styles.meta}>
+        <Text style={[styles.meta, { color: colors.textTertiary }]}>
           {formatDuration(note.durationMs)}
         </Text>
       </View>
@@ -65,7 +71,6 @@ export function NoteCard({ note, onPress }: NoteCardProps) {
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: '#fff',
     marginHorizontal: 16,
     marginVertical: 6,
     padding: 16,
@@ -94,7 +99,6 @@ const styles = StyleSheet.create({
   },
   excerpt: {
     fontSize: 15,
-    color: '#666',
     lineHeight: 20,
     marginBottom: 12,
   },
@@ -104,6 +108,5 @@ const styles = StyleSheet.create({
   },
   meta: {
     fontSize: 13,
-    color: '#999',
   },
 });

@@ -1,16 +1,19 @@
 import React from 'react';
 import { View, Text, StyleSheet, ActivityIndicator } from 'react-native';
 import { TranscriptStatus } from '@/types';
+import { useColors } from '@/hooks/useThemeColor';
 
 interface StatusChipProps {
   status: TranscriptStatus;
 }
 
 export function StatusChip({ status }: StatusChipProps) {
+  const colors = useColors();
+
   const config = {
-    pending: { label: 'Transcribing...', color: '#FF9500', showSpinner: true },
-    done: { label: 'Done', color: '#34C759', showSpinner: false },
-    error: { label: 'Error', color: '#FF3B30', showSpinner: false },
+    pending: { label: 'Transcribing...', color: colors.statusPending, showSpinner: true },
+    done: { label: 'Done', color: colors.statusDone, showSpinner: false },
+    error: { label: 'Error', color: colors.statusError, showSpinner: false },
   };
 
   const { label, color, showSpinner } = config[status];

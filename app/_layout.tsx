@@ -51,7 +51,9 @@ function RootLayoutNav() {
             name="index"
             options={{
               title: 'Voice Notes',
-              headerLargeTitle: true,
+              headerLargeTitle: false,
+              headerLargeTitleShadowVisible: false,
+              headerTransparent: false,
             }}
           />
           <Stack.Screen

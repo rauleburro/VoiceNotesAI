@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
+import { useColors } from '@/hooks/useThemeColor';
 
 interface LevelMeterProps {
   level: number; // 0-1
@@ -7,17 +8,21 @@ interface LevelMeterProps {
 }
 
 export function LevelMeter({ level, barCount = 20 }: LevelMeterProps) {
+  const colors = useColors();
+
   const bars = Array.from({ length: barCount }, (_, i) => {
     const threshold = i / barCount;
     const isActive = level > threshold;
+    const isHigh = i > barCount * 0.7;
 
     return (
       <View
         key={i}
         style={[
           styles.bar,
-          isActive && styles.barActive,
-          i > barCount * 0.7 && isActive && styles.barHigh,
+          { backgroundColor: colors.trackInactive },
+          isActive && { backgroundColor: colors.levelNormal, height: 30 },
+          isHigh && isActive && { backgroundColor: colors.levelHigh },
         ]}
       />
     );
@@ -28,9 +33,16 @@ export function LevelMeter({ level, barCount = 20 }: LevelMeterProps) {
 
 // Alternative: Single animated bar
 export function AnimatedLevelBar({ level }: { level: number }) {
+  const colors = useColors();
+
   return (
-    <View style={styles.barContainer}>
-      <View style={[styles.barFill, { width: `${level * 100}%` }]} />
+    <View style={[styles.barContainer, { backgroundColor: colors.trackInactive }]}>
+      <View
+        style={[
+          styles.barFill,
+          { width: `${level * 100}%`, backgroundColor: colors.levelNormal },
+        ]}
+      />
     </View>
   );
 }
@@ -46,26 +58,16 @@ const styles = StyleSheet.create({
   bar: {
     width: 4,
     height: 20,
-    backgroundColor: '#E0E0E0',
     borderRadius: 2,
-  },
-  barActive: {
-    backgroundColor: '#4CAF50',
-    height: 30,
-  },
-  barHigh: {
-    backgroundColor: '#FF9800',
   },
   barContainer: {
     height: 8,
-    backgroundColor: '#E0E0E0',
     borderRadius: 4,
     overflow: 'hidden',
     width: '100%',
   },
   barFill: {
     height: '100%',
-    backgroundColor: '#4CAF50',
     borderRadius: 4,
   },
 });

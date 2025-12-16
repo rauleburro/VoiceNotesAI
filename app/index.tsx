@@ -2,10 +2,12 @@ import React, { useCallback } from 'react';
 import { View, FlatList, StyleSheet, RefreshControl } from 'react-native';
 import { useRouter } from 'expo-router';
 import { randomUUID } from 'expo-crypto';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNotesContext } from '@/contexts/NotesContext';
 import { useRecording } from '@/hooks/useRecording';
 import { useTranscription } from '@/hooks/useTranscription';
 import { useSearch } from '@/hooks/useSearch';
+import { useColors } from '@/hooks/useThemeColor';
 import { NoteCard } from '@/components/NoteCard';
 import { SearchBar } from '@/components/SearchBar';
 import { RecordButton } from '@/components/RecordButton';
@@ -15,6 +17,8 @@ import { VoiceNote } from '@/types';
 
 export default function NotesListScreen() {
   const router = useRouter();
+  const insets = useSafeAreaInsets();
+  const colors = useColors();
   const { notes, loading, loadNotes, addNote, updateNote } = useNotesContext();
   const { state, durationMs, level, startRecording, stopRecording, cancelRecording } = useRecording();
   const { transcribe } = useTranscription();
@@ -82,8 +86,11 @@ export default function NotesListScreen() {
     );
   }, [loading, isFiltered, query, clearSearch]);
 
+  // Calculate bottom padding for the record button
+  const recordButtonBottom = Math.max(insets.bottom, 16) + 16;
+
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
       {/* Search bar */}
       <SearchBar
         value={query}
@@ -97,14 +104,21 @@ export default function NotesListScreen() {
         keyExtractor={(item) => item.id}
         renderItem={renderItem}
         ListEmptyComponent={renderEmpty}
-        contentContainerStyle={displayedNotes.length === 0 ? styles.emptyList : undefined}
+        contentContainerStyle={[
+          displayedNotes.length === 0 ? styles.emptyList : styles.list,
+          { paddingBottom: 100 }, // Space for floating button
+        ]}
         refreshControl={
-          <RefreshControl refreshing={loading} onRefresh={loadNotes} />
+          <RefreshControl
+            refreshing={loading}
+            onRefresh={loadNotes}
+            tintColor={colors.primary}
+          />
         }
       />
 
       {/* Record button */}
-      <View style={styles.recordContainer}>
+      <View style={[styles.recordContainer, { bottom: recordButtonBottom }]}>
         <RecordButton
           isRecording={state === 'recording'}
           onPress={handleRecordPress}
@@ -129,12 +143,15 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
+  list: {
+    paddingVertical: 8,
+  },
   emptyList: {
-    flex: 1,
+    flexGrow: 1,
+    justifyContent: 'center',
   },
   recordContainer: {
     position: 'absolute',
-    bottom: 32,
     alignSelf: 'center',
   },
 });

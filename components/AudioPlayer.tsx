@@ -4,6 +4,7 @@ import { FontAwesome } from '@expo/vector-icons';
 import Slider from '@react-native-community/slider';
 import { UseAudioPlayerResult } from '@/hooks/useAudioPlayer';
 import { formatDuration } from '@/utils/format';
+import { useColors } from '@/hooks/useThemeColor';
 
 interface AudioPlayerProps {
   uri: string;
@@ -12,6 +13,7 @@ interface AudioPlayerProps {
 }
 
 export function AudioPlayer({ uri, durationMs, player }: AudioPlayerProps) {
+  const colors = useColors();
   const {
     isPlaying,
     isLoaded,
@@ -46,16 +48,16 @@ export function AudioPlayer({ uri, durationMs, player }: AudioPlayerProps) {
   const actualDuration = loadedDuration || durationMs;
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: colors.surfaceSecondary }]}>
       <Pressable
-        style={styles.playButton}
+        style={[styles.playButton, { backgroundColor: colors.primary + '20' }]}
         onPress={handlePlayPause}
         disabled={!isLoaded}
       >
         <FontAwesome
           name={isPlaying ? 'pause' : 'play'}
           size={24}
-          color={isLoaded ? '#007AFF' : '#CCC'}
+          color={isLoaded ? colors.primary : colors.icon}
         />
       </Pressable>
 
@@ -66,14 +68,18 @@ export function AudioPlayer({ uri, durationMs, player }: AudioPlayerProps) {
           maximumValue={actualDuration}
           value={positionMs}
           onSlidingComplete={handleSeek}
-          minimumTrackTintColor="#007AFF"
-          maximumTrackTintColor="#E0E0E0"
-          thumbTintColor="#007AFF"
+          minimumTrackTintColor={colors.trackActive}
+          maximumTrackTintColor={colors.trackInactive}
+          thumbTintColor={colors.primary}
           disabled={!isLoaded}
         />
         <View style={styles.timeContainer}>
-          <Text style={styles.time}>{formatDuration(positionMs)}</Text>
-          <Text style={styles.time}>{formatDuration(actualDuration)}</Text>
+          <Text style={[styles.time, { color: colors.textTertiary }]}>
+            {formatDuration(positionMs)}
+          </Text>
+          <Text style={[styles.time, { color: colors.textTertiary }]}>
+            {formatDuration(actualDuration)}
+          </Text>
         </View>
       </View>
     </View>
@@ -84,7 +90,6 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#F8F8F8',
     padding: 16,
     borderRadius: 12,
   },
@@ -92,7 +97,6 @@ const styles = StyleSheet.create({
     width: 48,
     height: 48,
     borderRadius: 24,
-    backgroundColor: '#E8F0FF',
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 16,
@@ -111,6 +115,5 @@ const styles = StyleSheet.create({
   },
   time: {
     fontSize: 12,
-    color: '#999',
   },
 });

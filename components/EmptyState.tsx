@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
+import { useColors } from '@/hooks/useThemeColor';
 
 type IconName = React.ComponentProps<typeof FontAwesome>['name'];
 
@@ -15,13 +16,18 @@ interface EmptyStateProps {
 }
 
 export function EmptyState({ icon, title, message, action }: EmptyStateProps) {
+  const colors = useColors();
+
   return (
     <View style={styles.container}>
-      <FontAwesome name={icon} size={48} color="#CCC" />
-      <Text style={styles.title}>{title}</Text>
-      <Text style={styles.message}>{message}</Text>
+      <FontAwesome name={icon} size={64} color={colors.icon} />
+      <Text style={[styles.title, { color: colors.textPrimary }]}>{title}</Text>
+      <Text style={[styles.message, { color: colors.textSecondary }]}>{message}</Text>
       {action && (
-        <Pressable style={styles.button} onPress={action.onPress}>
+        <Pressable
+          style={[styles.button, { backgroundColor: colors.primary }]}
+          onPress={action.onPress}
+        >
           <Text style={styles.buttonText}>{action.label}</Text>
         </Pressable>
       )}
@@ -44,14 +50,13 @@ const styles = StyleSheet.create({
   },
   message: {
     fontSize: 16,
-    color: '#666',
     textAlign: 'center',
+    lineHeight: 22,
   },
   button: {
     marginTop: 24,
     paddingHorizontal: 20,
     paddingVertical: 12,
-    backgroundColor: '#007AFF',
     borderRadius: 8,
   },
   buttonText: {

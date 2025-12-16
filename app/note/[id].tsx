@@ -7,6 +7,7 @@ import {
   StyleSheet,
   Alert,
   Pressable,
+  ActivityIndicator,
 } from 'react-native';
 import { useLocalSearchParams, useRouter, Stack } from 'expo-router';
 import { FontAwesome } from '@expo/vector-icons';
@@ -16,6 +17,7 @@ import { deleteRecordingFile } from '@/services/recording';
 import { useTranscription } from '@/hooks/useTranscription';
 import { useAudioPlayer } from '@/hooks/useAudioPlayer';
 import { useAIAssist } from '@/hooks/useAIAssist';
+import { useColors } from '@/hooks/useThemeColor';
 import { AudioPlayer } from '@/components/AudioPlayer';
 import { StatusChip } from '@/components/StatusChip';
 import { RetryButton } from '@/components/RetryButton';
@@ -26,6 +28,7 @@ import { VoiceNote } from '@/types';
 export default function NoteDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
+  const colors = useColors();
   const { updateNote, removeNote, refreshNote } = useNotesContext();
 
   const [note, setNote] = useState<VoiceNote | null>(null);
@@ -109,8 +112,11 @@ export default function NoteDetailScreen() {
 
   if (!note) {
     return (
-      <View style={styles.loading}>
-        <Text>Loading...</Text>
+      <View style={[styles.loading, { backgroundColor: colors.background }]}>
+        <ActivityIndicator size="large" color={colors.primary} />
+        <Text style={[styles.loadingText, { color: colors.textSecondary }]}>
+          Loading note...
+        </Text>
       </View>
     );
   }
@@ -121,14 +127,17 @@ export default function NoteDetailScreen() {
         options={{
           title: note.titleSuggestion || 'Note',
           headerRight: () => (
-            <Pressable onPress={handleDelete} hitSlop={8}>
-              <FontAwesome name="trash" size={20} color="#FF3B30" />
+            <Pressable onPress={handleDelete} hitSlop={8} accessibilityLabel="Delete note">
+              <FontAwesome name="trash" size={20} color={colors.error} />
             </Pressable>
           ),
         }}
       />
 
-      <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+      <ScrollView
+        style={[styles.container, { backgroundColor: colors.background }]}
+        contentContainerStyle={styles.content}
+      >
         {/* Audio Player */}
         <View style={styles.section}>
           <AudioPlayer
@@ -142,15 +151,15 @@ export default function NoteDetailScreen() {
         {/* Transcript */}
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>Transcript</Text>
+            <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>Transcript</Text>
             <View style={styles.sectionActions}>
               <StatusChip status={note.transcriptStatus} />
               {note.transcriptStatus === 'error' && (
                 <RetryButton onRetry={handleRetryTranscription} isLoading={isTranscribing} />
               )}
               {note.transcriptStatus === 'done' && !isEditing && (
-                <Pressable onPress={() => setIsEditing(true)}>
-                  <FontAwesome name="edit" size={18} color="#007AFF" />
+                <Pressable onPress={() => setIsEditing(true)} accessibilityLabel="Edit transcript">
+                  <FontAwesome name="edit" size={18} color={colors.primary} />
                 </Pressable>
               )}
             </View>
@@ -159,11 +168,19 @@ export default function NoteDetailScreen() {
           {isEditing ? (
             <View>
               <TextInput
-                style={styles.transcriptInput}
+                style={[
+                  styles.transcriptInput,
+                  {
+                    color: colors.textPrimary,
+                    borderColor: colors.primary,
+                    backgroundColor: colors.surface,
+                  },
+                ]}
                 value={editedTranscript}
                 onChangeText={setEditedTranscript}
                 multiline
                 autoFocus
+                placeholderTextColor={colors.placeholder}
               />
               <View style={styles.editActions}>
                 <Pressable
@@ -173,15 +190,18 @@ export default function NoteDetailScreen() {
                     setIsEditing(false);
                   }}
                 >
-                  <Text style={styles.cancelText}>Cancel</Text>
+                  <Text style={[styles.cancelText, { color: colors.textSecondary }]}>Cancel</Text>
                 </Pressable>
-                <Pressable style={styles.saveButton} onPress={handleSaveTranscript}>
+                <Pressable
+                  style={[styles.saveButton, { backgroundColor: colors.primary }]}
+                  onPress={handleSaveTranscript}
+                >
                   <Text style={styles.saveText}>Save</Text>
                 </Pressable>
               </View>
             </View>
           ) : (
-            <Text style={styles.transcript}>
+            <Text style={[styles.transcript, { color: colors.textPrimary }]}>
               {note.transcript || 'Transcript not available'}
             </Text>
           )}
@@ -211,6 +231,10 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    gap: 12,
+  },
+  loadingText: {
+    fontSize: 16,
   },
   section: {
     marginBottom: 24,
@@ -233,16 +257,15 @@ const styles = StyleSheet.create({
   transcript: {
     fontSize: 16,
     lineHeight: 24,
-    color: '#333',
   },
   transcriptInput: {
     fontSize: 16,
     lineHeight: 24,
     borderWidth: 1,
-    borderColor: '#007AFF',
     borderRadius: 8,
     padding: 12,
     minHeight: 150,
+    textAlignVertical: 'top',
   },
   editActions: {
     flexDirection: 'row',
@@ -254,11 +277,9 @@ const styles = StyleSheet.create({
     padding: 12,
   },
   cancelText: {
-    color: '#666',
     fontSize: 16,
   },
   saveButton: {
-    backgroundColor: '#007AFF',
     paddingHorizontal: 20,
     paddingVertical: 12,
     borderRadius: 8,

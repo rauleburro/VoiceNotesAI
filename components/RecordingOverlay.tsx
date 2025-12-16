@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, Pressable } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import { LevelMeter } from './LevelMeter';
 import { formatDuration } from '@/utils/format';
+import { useColors } from '@/hooks/useThemeColor';
 
 interface RecordingOverlayProps {
   durationMs: number;
@@ -17,13 +18,15 @@ export function RecordingOverlay({
   onStop,
   onCancel,
 }: RecordingOverlayProps) {
+  const colors = useColors();
+
   return (
-    <View style={styles.overlay}>
+    <View style={[styles.overlay, { backgroundColor: colors.overlayDark }]}>
       <View style={styles.content}>
         {/* Recording indicator */}
         <View style={styles.recordingIndicator}>
-          <View style={styles.redDot} />
-          <Text style={styles.recordingText}>Recording</Text>
+          <View style={[styles.redDot, { backgroundColor: colors.error }]} />
+          <Text style={[styles.recordingText, { color: colors.error }]}>Recording</Text>
         </View>
 
         {/* Timer */}
@@ -37,11 +40,15 @@ export function RecordingOverlay({
         {/* Controls */}
         <View style={styles.controls}>
           <Pressable style={styles.cancelButton} onPress={onCancel}>
-            <FontAwesome name="times" size={24} color="#666" />
-            <Text style={styles.cancelText}>Cancel</Text>
+            <FontAwesome name="times" size={24} color={colors.textTertiary} />
+            <Text style={[styles.cancelText, { color: colors.textTertiary }]}>Cancel</Text>
           </Pressable>
 
-          <Pressable style={styles.stopButton} onPress={onStop} testID="stop-button">
+          <Pressable
+            style={[styles.stopButton, { backgroundColor: colors.error }]}
+            onPress={onStop}
+            testID="stop-button"
+          >
             <FontAwesome name="stop" size={32} color="white" />
           </Pressable>
 
@@ -55,7 +62,6 @@ export function RecordingOverlay({
 const styles = StyleSheet.create({
   overlay: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(0, 0, 0, 0.9)',
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -72,11 +78,9 @@ const styles = StyleSheet.create({
     width: 12,
     height: 12,
     borderRadius: 6,
-    backgroundColor: '#FF3B30',
     marginRight: 8,
   },
   recordingText: {
-    color: '#FF3B30',
     fontSize: 16,
     fontWeight: '600',
   },
@@ -102,7 +106,6 @@ const styles = StyleSheet.create({
     padding: 12,
   },
   cancelText: {
-    color: '#666',
     fontSize: 12,
     marginTop: 4,
   },
@@ -110,7 +113,6 @@ const styles = StyleSheet.create({
     width: 72,
     height: 72,
     borderRadius: 36,
-    backgroundColor: '#FF3B30',
     justifyContent: 'center',
     alignItems: 'center',
   },

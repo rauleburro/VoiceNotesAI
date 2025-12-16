@@ -1,6 +1,7 @@
 import React from 'react';
 import { Pressable, Text, StyleSheet, ActivityIndicator } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
+import { useColors } from '@/hooks/useThemeColor';
 
 interface RetryButtonProps {
   onRetry: () => void;
@@ -8,6 +9,8 @@ interface RetryButtonProps {
 }
 
 export function RetryButton({ onRetry, isLoading }: RetryButtonProps) {
+  const colors = useColors();
+
   return (
     <Pressable
       style={styles.button}
@@ -15,11 +18,11 @@ export function RetryButton({ onRetry, isLoading }: RetryButtonProps) {
       disabled={isLoading}
     >
       {isLoading ? (
-        <ActivityIndicator size="small" color="#007AFF" />
+        <ActivityIndicator size="small" color={colors.primary} />
       ) : (
         <>
-          <FontAwesome name="refresh" size={14} color="#007AFF" />
-          <Text style={styles.text}>Retry</Text>
+          <FontAwesome name="refresh" size={14} color={colors.primary} />
+          <Text style={[styles.text, { color: colors.primary }]}>Retry</Text>
         </>
       )}
     </Pressable>
@@ -34,7 +37,6 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   text: {
-    color: '#007AFF',
     fontSize: 14,
     fontWeight: '500',
   },

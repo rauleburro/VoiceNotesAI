@@ -132,11 +132,23 @@ export async function generateAIAssist(
   }
 }
 
+// Check if error is retryable (rate limit, overloaded, or temporary)
+function isRetryableError(error: Error): boolean {
+  const message = error.message?.toLowerCase() || '';
+  return (
+    message.includes('429') ||
+    message.includes('503') ||
+    message.includes('overloaded') ||
+    message.includes('temporarily') ||
+    message.includes('try again')
+  );
+}
+
 // Retry logic for AI Assist with exponential backoff
 export async function generateAIAssistWithRetry(
   noteId: string,
   transcript: string,
-  maxRetries: number = 3
+  maxRetries: number = 5
 ): Promise<AIAssistResult> {
   let lastError: Error | null = null;
 
@@ -145,21 +157,20 @@ export async function generateAIAssistWithRetry(
       return await generateAIAssist(noteId, transcript);
     } catch (error) {
       lastError = error as Error;
-      console.warn(`AI Assist attempt ${attempt} failed:`, error);
+      console.warn(`AI Assist attempt ${attempt}/${maxRetries} failed:`, error);
 
-      // Check if rate limited (429)
-      const isRateLimited = lastError.message?.includes('429');
+      const shouldRetry = isRetryableError(lastError);
 
-      if (attempt < maxRetries && isRateLimited) {
-        // Wait before retry (exponential backoff)
-        await new Promise(resolve =>
-          setTimeout(resolve, Math.pow(2, attempt) * 1000)
-        );
+      if (attempt < maxRetries && shouldRetry) {
+        // Exponential backoff: 2s, 4s, 8s, 16s, 32s
+        const delay = Math.pow(2, attempt) * 1000;
+        console.log(`Retrying in ${delay / 1000}s...`);
+        await new Promise(resolve => setTimeout(resolve, delay));
         continue;
       }
 
-      // For non-rate-limit errors, don't retry
-      if (!isRateLimited) {
+      // For non-retryable errors, don't retry
+      if (!shouldRetry) {
         break;
       }
     }

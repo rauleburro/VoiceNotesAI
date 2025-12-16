@@ -8,6 +8,7 @@ import Animated, {
   useSharedValue,
   withSequence,
 } from 'react-native-reanimated';
+import { useColors } from '@/hooks/useThemeColor';
 
 interface RecordButtonProps {
   isRecording: boolean;
@@ -16,6 +17,7 @@ interface RecordButtonProps {
 }
 
 export function RecordButton({ isRecording, onPress, disabled }: RecordButtonProps) {
+  const colors = useColors();
   const scale = useSharedValue(1);
 
   useEffect(() => {
@@ -42,7 +44,7 @@ export function RecordButton({ isRecording, onPress, disabled }: RecordButtonPro
       disabled={disabled}
       style={({ pressed }) => [
         styles.button,
-        isRecording && styles.recording,
+        { backgroundColor: isRecording ? colors.error : colors.primary },
         pressed && styles.pressed,
         disabled && styles.disabled,
       ]}
@@ -63,7 +65,6 @@ const styles = StyleSheet.create({
     width: 72,
     height: 72,
     borderRadius: 36,
-    backgroundColor: '#007AFF',
     justifyContent: 'center',
     alignItems: 'center',
     shadowColor: '#000',
@@ -71,9 +72,6 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 4,
     elevation: 5,
-  },
-  recording: {
-    backgroundColor: '#FF3B30',
   },
   pressed: {
     opacity: 0.8,

@@ -2,8 +2,10 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import { getAudioRoute, setAudioRoute, AudioRoute } from '@/modules/native-audio-session';
+import { useColors } from '@/hooks/useThemeColor';
 
 export function AudioRouteToggle() {
+  const colors = useColors();
   const [currentRoute, setCurrentRoute] = useState<AudioRoute>('speaker');
   const [isLoading, setIsLoading] = useState(false);
 
@@ -28,16 +30,20 @@ export function AudioRouteToggle() {
 
   return (
     <Pressable
-      style={[styles.container, isLoading && styles.loading]}
+      style={[
+        styles.container,
+        { backgroundColor: colors.primary + '20' },
+        isLoading && styles.loading,
+      ]}
       onPress={toggleRoute}
       disabled={isLoading}
     >
       <FontAwesome
         name={isSpeaker ? 'volume-up' : 'phone'}
         size={16}
-        color="#007AFF"
+        color={colors.primary}
       />
-      <Text style={styles.label}>
+      <Text style={[styles.label, { color: colors.primary }]}>
         {isSpeaker ? 'Speaker' : 'Earpiece'}
       </Text>
     </Pressable>
@@ -50,7 +56,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: 8,
     paddingHorizontal: 12,
-    backgroundColor: '#E8F0FF',
     borderRadius: 16,
     alignSelf: 'flex-start',
     marginTop: 12,
@@ -60,7 +65,6 @@ const styles = StyleSheet.create({
     opacity: 0.5,
   },
   label: {
-    color: '#007AFF',
     fontSize: 14,
     fontWeight: '500',
   },
