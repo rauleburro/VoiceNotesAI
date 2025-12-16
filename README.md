@@ -17,12 +17,12 @@ bunx expo prebuild
 bun run ios      # or: bun run android
 ```
 
-> **Note**: You need a Google Cloud API key with Speech-to-Text and Generative Language APIs enabled. See [Setup](#setup) for details.
+> **Note**: You need a Groq API key (free) for transcription and a Google Cloud API key for Gemini AI. See [Setup](#setup) for details.
 
 ## Features
 
 - Record voice notes with live audio level feedback
-- Automatic transcription using Google Cloud Speech-to-Text (Chirp model)
+- Automatic transcription using Groq Whisper (whisper-large-v3-turbo)
 - AI-generated summaries and key points using Google Gemini 2.5 Flash
 - Search across all transcripts
 - Edit transcripts manually
@@ -34,10 +34,11 @@ bun run ios      # or: bun run android
 - **Framework**: React Native + Expo SDK 54
 - **Language**: TypeScript
 - **Navigation**: expo-router v6
-- **ASR**: Google Cloud Speech-to-Text V2 (Chirp model)
+- **ASR**: Groq Whisper (whisper-large-v3-turbo) - FREE
 - **LLM**: Google Gemini 2.5 Flash
 - **Storage**: SQLite (expo-sqlite)
 - **Native Modules**: Custom Swift/Kotlin modules
+- **E2E Testing**: Maestro
 
 ## Setup
 
@@ -46,18 +47,23 @@ bun run ios      # or: bun run android
 - Node.js 18+ or Bun
 - Xcode 15+ (for iOS)
 - Android Studio (for Android)
-- Google Cloud API key
+- Groq API key (free at console.groq.com)
+- Google Cloud API key (for Gemini AI)
 
-### Getting a Google API Key
+### Getting API Keys
 
+**Groq API Key (FREE - for transcription):**
+1. Go to [Groq Console](https://console.groq.com/)
+2. Sign up for a free account
+3. Create an API key
+
+**Google API Key (for Gemini AI):**
 1. Go to [Google Cloud Console](https://console.cloud.google.com/)
 2. Create a new project or select an existing one
-3. Enable the following APIs:
-   - **Cloud Speech-to-Text API** (for transcription)
-   - **Generative Language API** (for Gemini AI summaries)
+3. Enable the **Generative Language API**
 4. Go to **APIs & Services > Credentials**
 5. Click **Create Credentials > API Key**
-6. (Recommended) Restrict the key to only the APIs above
+6. (Recommended) Restrict the key to Generative Language API only
 
 ### Installation
 
@@ -72,8 +78,9 @@ bun install
 # Copy environment file
 cp .env.example .env
 
-# Add your Google API key to .env
-EXPO_PUBLIC_GOOGLE_API_KEY=AIza-your-key-here
+# Add your API keys to .env
+EXPO_PUBLIC_GROQ_API_KEY=gsk_your-groq-key-here
+EXPO_PUBLIC_GOOGLE_API_KEY=AIza-your-google-key-here
 
 # Generate native projects
 bunx expo prebuild
@@ -154,36 +161,37 @@ subscription.remove();
 - iOS: Uses `AVAudioRecorder` metering with timer-based polling
 - Android: Uses `AudioRecord` with RMS calculation on audio buffer
 
-## ASR Choice: Google Cloud Speech-to-Text V2 (Chirp)
+## ASR Choice: Groq Whisper (whisper-large-v3-turbo)
 
-### Why Google Speech-to-Text with Chirp?
+### Why Groq Whisper?
 
 | Factor | Assessment |
 |--------|------------|
-| Accuracy | Chirp is Google's latest ASR model, state-of-the-art |
+| Accuracy | OpenAI Whisper large-v3-turbo, state-of-the-art |
+| Speed | Groq's LPU provides extremely fast inference (~10x realtime) |
+| Cost | **FREE** (generous free tier) |
 | Languages | 100+ languages with auto-detection |
-| Integration | REST API, same provider as Gemini LLM |
-| Cost | $0.016/minute (standard), $0.024/minute (Chirp) |
-| Features | Automatic punctuation, speaker diarization |
+| Integration | Simple REST API, OpenAI-compatible |
 
 ### Tradeoffs
 
 **Pros:**
-- Excellent transcription quality with latest Chirp model
-- Same Google Cloud project for ASR + LLM (single API key)
-- Automatic punctuation and formatting
-- Great multi-language support
+- Excellent transcription quality (Whisper large-v3-turbo)
+- **Completely free** for development and reasonable usage
+- Extremely fast transcription via Groq's LPU
+- Simple API integration
+- Automatic punctuation
 
 **Cons:**
 - Requires internet connection
-- 10MB file size limit for sync transcription
-- Slightly more complex API than some alternatives
+- Rate limits on free tier (but generous)
+- 25MB file size limit
 
 ### Handling Limitations
 
-- **Long recordings**: Could use async API for files >10MB (not in MVP)
-- **Offline**: Queued for transcription when online (not implemented in MVP)
-- **Rate limits**: Exponential backoff retry logic implemented
+- **Retries**: Exponential backoff retry logic implemented
+- **Errors**: Clear error messages displayed to user
+- **Offline**: Notes saved locally, transcription pending until online
 
 ## LLM Choice: Google Gemini 2.5 Flash
 
@@ -242,6 +250,8 @@ For a production app:
 
 ## Testing
 
+### Unit Tests
+
 ```bash
 # Run all tests
 bun test
@@ -253,9 +263,25 @@ bunx jest
 bunx jest --coverage
 ```
 
-### Test Coverage
+**Unit Test Coverage:**
+- `useSearch` hook: debouncing, filtering, clearing
+- Format utilities: duration, date, excerpt formatting
 
-- **Unit Tests**: useSearch hook (debouncing, filtering), format utilities (duration, date, excerpt)
+### E2E Tests (Maestro)
+
+```bash
+# Install Maestro
+curl -Ls "https://get.maestro.mobile.dev" | bash
+
+# Run E2E tests (app must be running in simulator)
+maestro test .maestro/
+
+# Run specific test
+maestro test .maestro/record-flow.yaml
+```
+
+**E2E Test Coverage:**
+- `record-flow.yaml`: Complete flow - Record → Note appears → Transcription shown → Detail view
 
 ## Project Structure
 

@@ -50,6 +50,7 @@ export function AudioPlayer({ uri, durationMs, player }: AudioPlayerProps) {
   return (
     <View style={[styles.container, { backgroundColor: colors.surfaceSecondary }]}>
       <Pressable
+        testID="play-button"
         style={[styles.playButton, { backgroundColor: colors.primary + '20' }]}
         onPress={handlePlayPause}
         disabled={!isLoaded}

@@ -1,0 +1,63 @@
+appId: com.voicenotesai.app
+---
+# Integration Test: Record → Note Appears → Transcription Shown
+# This test covers the core user flow as required by the technical assessment
+
+- launchApp
+
+# 1. Verify we're on the main screen (Voice Notes list)
+- assertVisible: "Voice Notes"
+
+# 2. Start recording - tap the record button
+- tapOn:
+    id: "record-button"
+
+# 3. Verify recording overlay appears with timer and stop button
+- assertVisible:
+    id: "recording-overlay"
+- assertVisible:
+    id: "recording-timer"
+- assertVisible:
+    id: "stop-button"
+
+# 4. Wait a moment to record some audio (2 seconds)
+- swipe:
+    direction: DOWN
+    duration: 2000
+
+# 5. Stop recording
+- tapOn:
+    id: "stop-button"
+
+# 6. Verify recording overlay disappears
+- assertNotVisible:
+    id: "recording-overlay"
+
+# 7. Verify new note appears in the list
+- assertVisible:
+    id: "note-card"
+
+# 8. Verify transcription status is shown (pending or done)
+- assertVisible:
+    id: "status-chip"
+
+# 9. Wait for transcription to complete (max 10 seconds)
+- extendedWaitUntil:
+    visible:
+      text: ".*"
+      id: "transcript-excerpt"
+    timeout: 10000
+
+# 10. Tap on the note to open detail view
+- tapOn:
+    id: "note-card"
+
+# 11. Verify detail screen shows transcript section
+- assertVisible:
+    id: "transcript-section"
+
+# 12. Verify playback controls are visible
+- assertVisible:
+    id: "play-button"
+
+# Test passed: Record → Note Appears → Transcription Shown

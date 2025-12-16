@@ -23,7 +23,7 @@ export function TranscriptSection({
   const editor = useTranscriptEditor(note.transcript || '', onTranscriptSaved);
 
   return (
-    <View style={styles.section}>
+    <View testID="transcript-section" style={styles.section}>
       <View style={styles.sectionHeader}>
         <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>Transcript</Text>
         <View style={styles.sectionActions}>

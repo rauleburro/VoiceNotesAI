@@ -40,6 +40,7 @@ export function RecordButton({ isRecording, onPress, disabled }: RecordButtonPro
 
   return (
     <Pressable
+      testID="record-button"
       onPress={onPress}
       disabled={disabled}
       style={({ pressed }) => [

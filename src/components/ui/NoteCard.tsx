@@ -39,6 +39,7 @@ export function NoteCard({ note, onPress }: NoteCardProps) {
 
   return (
     <Pressable
+      testID="note-card"
       style={({ pressed }) => [
         styles.card,
         { backgroundColor: colors.cardBackground },
@@ -53,7 +54,7 @@ export function NoteCard({ note, onPress }: NoteCardProps) {
         <StatusChip status={note.transcriptStatus} />
       </View>
 
-      <Text style={[styles.excerpt, { color: colors.textSecondary }]} numberOfLines={2}>
+      <Text testID="transcript-excerpt" style={[styles.excerpt, { color: colors.textSecondary }]} numberOfLines={2}>
         {getExcerpt(note.transcript)}
       </Text>
 

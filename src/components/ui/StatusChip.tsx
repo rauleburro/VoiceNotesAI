@@ -19,7 +19,7 @@ export function StatusChip({ status }: StatusChipProps) {
   const { label, color, showSpinner } = config[status];
 
   return (
-    <View style={[styles.chip, { backgroundColor: `${color}20` }]}>
+    <View testID="status-chip" style={[styles.chip, { backgroundColor: `${color}20` }]}>
       {showSpinner && (
         <ActivityIndicator size="small" color={color} style={styles.spinner} />
       )}

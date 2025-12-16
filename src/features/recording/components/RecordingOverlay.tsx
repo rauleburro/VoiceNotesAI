@@ -21,7 +21,7 @@ export function RecordingOverlay({
   const colors = useColors();
 
   return (
-    <View style={[styles.overlay, { backgroundColor: colors.overlayDark }]}>
+    <View testID="recording-overlay" style={[styles.overlay, { backgroundColor: colors.overlayDark }]}>
       <View style={styles.content}>
         {/* Recording indicator */}
         <View style={styles.recordingIndicator}>
@@ -30,7 +30,7 @@ export function RecordingOverlay({
         </View>
 
         {/* Timer */}
-        <Text style={styles.timer}>{formatDuration(durationMs)}</Text>
+        <Text testID="recording-timer" style={styles.timer}>{formatDuration(durationMs)}</Text>
 
         {/* Level meter */}
         <View style={styles.levelContainer}>
