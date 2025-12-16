@@ -8,13 +8,15 @@ export interface AIAssistResult {
   titleSuggestion: string;
 }
 
-const SYSTEM_PROMPT = `You are a helpful assistant that analyzes voice note transcripts.
-Given a transcript, provide:
-1. A concise summary (3-5 sentences)
-2. Key points (3-5 bullet points)
-3. A short title suggestion (5 words max)
+const SYSTEM_PROMPT = `Eres un asistente que analiza transcripciones de notas de voz.
+Dado una transcripción, proporciona:
+1. Un resumen conciso (3-5 oraciones)
+2. Puntos clave (3-5 puntos)
+3. Una sugerencia de título corto (máximo 5 palabras)
 
-Respond ONLY with valid JSON in this exact format:
+IMPORTANTE: Responde siempre en español.
+
+Responde SOLO con JSON válido en este formato exacto:
 {
   "summary": "...",
   "keyPoints": ["...", "..."],
