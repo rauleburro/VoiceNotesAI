@@ -10,9 +10,17 @@ jest.mock('expo', () => ({}));
 // Mock expo-modules-core for native module tests
 jest.mock('expo-modules-core', () => ({
   requireNativeModule: jest.fn(() => ({})),
+  requireOptionalNativeModule: jest.fn(() => null),
   EventEmitter: jest.fn(() => ({
     addListener: jest.fn(() => ({ remove: jest.fn() })),
   })),
+}));
+
+// Mock @expo/vector-icons
+jest.mock('@expo/vector-icons', () => ({
+  FontAwesome: 'FontAwesome',
+  MaterialIcons: 'MaterialIcons',
+  Ionicons: 'Ionicons',
 }));
 
 // Mock expo-file-system

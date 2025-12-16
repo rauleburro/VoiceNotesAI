@@ -1,5 +1,5 @@
 import { renderHook, act, waitFor } from '@testing-library/react-native';
-import { useSearch } from '@/hooks/useSearch';
+import { useSearch } from '@/features/search/hooks/useSearch';
 import * as db from '@/services/database';
 import { VoiceNote } from '@/types';
 

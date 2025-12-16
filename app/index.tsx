@@ -3,17 +3,19 @@ import { View, FlatList, StyleSheet, RefreshControl } from 'react-native';
 import { useRouter } from 'expo-router';
 import { randomUUID } from 'expo-crypto';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useNotesContext } from '@/contexts/NotesContext';
-import { useRecording } from '@/hooks/useRecording';
-import { useTranscription } from '@/hooks/useTranscription';
-import { useSearch } from '@/hooks/useSearch';
+
 import { useColors } from '@/hooks/useThemeColor';
-import { NoteCard } from '@/components/NoteCard';
-import { SearchBar } from '@/components/SearchBar';
-import { RecordButton } from '@/components/RecordButton';
-import { RecordingOverlay } from '@/components/RecordingOverlay';
-import { EmptyState } from '@/components/EmptyState';
+import { useNotesContext } from '@/contexts/NotesContext';
 import { VoiceNote } from '@/types';
+
+// Features
+import { useRecording, RecordButton, RecordingOverlay } from '@/features/recording';
+import { useTranscription } from '@/features/transcription';
+import { useSearch, SearchBar } from '@/features/search';
+
+// Components
+import { NoteCard, EmptyState } from '@/components/ui';
+import { LoadingScreen } from '@/components/feedback';
 
 export default function NotesListScreen() {
   const router = useRouter();
